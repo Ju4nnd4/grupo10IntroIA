@@ -45,7 +45,7 @@ def crear_variables():
     riesgo['bajo']     = fuzz.trimf(riesgo.universe, [0, 0, 40])
     riesgo['medio']    = fuzz.trimf(riesgo.universe, [30, 50, 70])
     riesgo['alto']     = fuzz.trimf(riesgo.universe, [55, 70, 85])
-    riesgo['muy_alto'] = fuzz.trapmf(riesgo.universe, [75, 90, 100, 100])
+    riesgo['muy_alto'] = fuzz.trapmf(riesgo.universe, [70, 85, 100, 100])
     riesgo.defuzzify_method = 'centroid'
  
     return bateria, viento, distancia, riesgo
@@ -95,7 +95,13 @@ def crear_reglas(bateria, viento, distancia, riesgo):
         ctrl.Rule(viento['fuerte'] & (distancia['larga'] | bateria['media']), riesgo['muy_alto']),
 
         # R14: batería baja & ~viento calmo → riesgo muy alto
-        ctrl.Rule(bateria['baja'] & ~viento['calmo'], riesgo['muy_alto'])
+        ctrl.Rule(bateria['baja'] & ~viento['calmo'], riesgo['muy_alto']),
+
+        # R15: viento muy fuerte & ~batería alta → riesgo muy alto
+        ctrl.Rule(viento['muy_fuerte'] & ~bateria['alta'], riesgo['muy_alto']),
+
+        # R16: batería alta & distancia larga & viento moderado → riesgo alto
+        ctrl.Rule(bateria['alta'] & distancia['larga'] & viento['moderado'], riesgo['alto']),
     ]
 
 
@@ -111,9 +117,9 @@ def etiqueta_riesgo(valor):
     """Convierte el riesgo numérico (0-100) en la etiqueta correspondiente."""
     if valor < 35:
         return "bajo"
-    elif valor < 60:
+    elif valor < 55:
         return "medio"
-    elif valor < 80:
+    elif valor < 70:
         return "alto"
     else:
         return "muy_alto"
