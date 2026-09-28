@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 ontologia_inferida.ttl
 .ipynb_checkpoints/
+grupo10IntroIA/
